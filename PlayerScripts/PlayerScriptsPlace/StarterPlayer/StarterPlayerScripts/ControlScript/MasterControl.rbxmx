@@ -1,7 +1,7 @@
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX88BC9D73715D42258E60606D2C2EC7ED">
+	<Item class="ModuleScript" referent="RBX10F9FB6B29484428A248314613B39560">
 		<Properties>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">MasterControl</string>
@@ -17,6 +17,11 @@ local MasterControl = {}
 
 local Players = game:GetService('Players')
 local RunService = game:GetService('RunService')
+local UserInputService = game:GetService('UserInputService')
+
+--NoVR will be false if the platform does not have the IsVREnabled property, because indexing it will throw an error.
+local success = pcall(function() local _ = UserInputService.IsVREnabled end)
+local NoVR = not success
 
 while not Players.LocalPlayer do
 	wait()
@@ -62,7 +67,15 @@ function MasterControl:Init()
 				humanoid.Jump = isJumping
 			end
 			
-			moveFunc(LocalPlayer, moveValue, true)	
+			local adjustedMoveValue = moveValue
+			if not NoVR and UserInputService.IsVREnabled then
+				local inverseHeadCFrame = UserInputService.UserHeadCFrame:inverse()
+				local yawOnlyLookVector = Vector3.new(inverseHeadCFrame.lookVector.X, 0, inverseHeadCFrame.lookVector.Z).unit
+				local yawOnlyCFrame = CFrame.new(Vector3.new(0,0,0), yawOnlyLookVector)
+				adjustedMoveValue = yawOnlyCFrame * adjustedMoveValue
+			end
+			
+			moveFunc(LocalPlayer, adjustedMoveValue, true)	
 		end
 	end
 	
