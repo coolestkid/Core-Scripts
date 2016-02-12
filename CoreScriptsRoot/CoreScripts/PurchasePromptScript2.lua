@@ -13,6 +13,7 @@ local InsertService = game:GetService('InsertService')
 local MarketplaceService = game:GetService('MarketplaceService')
 local Players = game:GetService('Players')
 local UserInputService = game:GetService('UserInputService')
+local RunService = game:GetService("RunService")
 
 --[[ Script Variables ]]--
 local RobloxGui = script.Parent
@@ -105,6 +106,7 @@ local PURCHASE_FAILED = {
 	DID_NOT_BUY_ROBUX = 8,
 	PROMPT_PURCHASE_ON_GUEST = 9,
 	THIRD_PARTY_DISABLED = 10,
+	ALREADY_OWN = 11,
 }
 local PURCHASE_STATE = {
 	DEFAULT = 1,
@@ -765,6 +767,9 @@ local function onPurchaseFailed(failType)
 	elseif failType == PURCHASE_FAILED.THIRD_PARTY_DISABLED then
 		failedText = "Third-party item sales have been disabled for this place. Your account has not been charged."
 		setPreviewImage(PurchaseData.ProductInfo, PurchaseData.AssetId)
+	elseif failType == PURCHASE_FAILED.ALREADY_OWN then
+		failedText = PURCHASE_MSG.ALREADY_OWN
+		setPreviewImage(PurchaseData.ProductInfo, PurchaseData.AssetId)
 	end
 
 	RobuxIcon.Visible = false
@@ -1040,11 +1045,8 @@ local function canPurchase(disableUpsell)
 				onPurchaseFailed(PURCHASE_FAILED.DEFAULT_ERROR)
 				return false
 			end
-			setPreviewImage(PurchaseData.ProductInfo, PurchaseData.AssetId)
-			ItemDescriptionText.Text = PURCHASE_MSG.ALREADY_OWN
-			PostBalanceText.Visible = false
-			setButtonsVisible(OkButton)
-			return true
+			onPurchaseFailed(PURCHASE_FAILED.ALREADY_OWN)
+			return false
 		end
 		
 		-- most places will not need to sell third party assets.
@@ -1226,7 +1228,10 @@ local function onAcceptPurchase()
 	result = HttpService:JSONDecode(result)
 	if result then
 		if result["success"] == false then
-			if result["status"] ~= "AlreadyOwned" then
+			if result["status"] == "AlreadyOwned" then
+				onPurchaseFailed(PURCHASE_FAILED.ALREADY_OWN)
+				return
+			else
 				print("PurchasePromptScript: onAcceptPurchase() response failed because", tostring(result["status"]))
 				if result["status"] == "EconomyDisabled" then
 					onPurchaseFailed(PURCHASE_FAILED.IN_GAME_PURCHASE_DISABLED)
@@ -1316,6 +1321,9 @@ end
 
 local function onBuyRobuxPrompt()
 	if useNewPromptEndHandling and purchaseState ~= PURCHASE_STATE.BUYROBUX then
+		return
+	end
+	if RunService:IsStudio() then
 		return
 	end
 
