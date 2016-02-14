@@ -187,6 +187,14 @@ local function clamp(value, min, max)
 	return value
 end
 
+function isControlKeyDown()
+	return UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+		or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+		or UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt)
+		or UserInputService:IsKeyDown(Enum.KeyCode.RightAlt)
+		or UserInputService:IsKeyDown(Enum.KeyCode.LeftMeta)
+end
+
 -- Returns whether followerUserId is following userId
 local function isFollowing(userId, followerUserId)
 	local apiPath = "user/following-exists?userId="
@@ -1661,6 +1669,7 @@ Playerlist.ToggleVisibility = function(name, inputState, inputObject)
 	if inputState and inputState ~= Enum.UserInputState.Begin then return end
 	if IsSmallScreenDevice then return end
 	if not playerlistCoreGuiEnabled then return end
+	if isControlKeyDown() then return end
 
 	isOpen = not isOpen
 
