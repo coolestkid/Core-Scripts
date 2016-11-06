@@ -436,8 +436,34 @@ BindableEvent_SendNotificationInfo.Event:connect(onSendNotificationInfo)
 -- New follower notification
 spawn(function()
 	local RobloxReplicatedStorage = game:GetService('RobloxReplicatedStorage')
-	local RemoteEvent_NewFollower = RobloxReplicatedStorage:WaitForChild('NewFollower', 86400) or RobloxReplicatedStorage:WaitForChild('NewFollower')
+	local RemoteEvent_RelationshipChanged = RobloxReplicatedStorage:WaitForChild('FollowRelationshipChanged', 86400) or RobloxReplicatedStorage:WaitForChild('FollowRelationshipChanged')
 	--
+	RemoteEvent_RelationshipChanged.OnClientEvent:connect(function(relationshipTable)
+		for followerId, followerTable  in pairs(relationshipTable) do	
+			if followerTable.IsFollower and followerTable.IsFollowing == nil then
+				local followerRbxPlayer = Players:GetPlayerByUserId(followerId)
+				if followerRbxPlayer then
+					if newNotificationPath then
+						local message = ("%s is now following you"):format(followerRbxPlayer.Name)
+						local image = getFriendImage(followerRbxPlayer.UserId)
+						sendNotificationInfo {
+							GroupName = "Friends",
+							Title = "New Follower",
+							Text = message,
+							DetailText = message,
+							Image = image,
+							Duration = 5
+						}
+					else
+						sendNotification("New Follower", followerRbxPlayer.Name.." is now following you!",
+							FRIEND_IMAGE..followerRbxPlayer.userId.."&x=48&y=48", 5, function() end)
+					end
+				end
+
+				break
+			end
+		end
+	end)
 	RemoteEvent_NewFollower.OnClientEvent:connect(function(followerRbxPlayer)
 		if newNotificationPath then
 			local message = ("%s is now following you"):format(followerRbxPlayer.Name)
