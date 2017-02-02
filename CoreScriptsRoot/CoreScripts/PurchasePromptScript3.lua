@@ -203,7 +203,7 @@ local HIDE_POSITION_TENFOOT = UDim2.new(0.5, -162*scaleFactor, 0, -180*scaleFact
 
 local BODY_SIZE = UDim2.new(0, 324, 0, 136)
 local BODY_SIZE_TENFOOT = UDim2.new(0, 324*scaleFactor, 0, 136*scaleFactor)
-local TWEEN_TIME = 0.3
+local TWEEN_TIME = 0.45
 
 local TITLE_HEIGHT = 40
 local TITLE_FONTSIZE = Enum.FontSize.Size24

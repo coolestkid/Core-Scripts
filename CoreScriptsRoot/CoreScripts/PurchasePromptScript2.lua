@@ -208,7 +208,7 @@ local BTN_SIZE = UDim2.new(0, 162, 0, 44)
 local BTN_SIZE_TENFOOT = UDim2.new(0, 162*scaleFactor, 0, 44*scaleFactor)
 local BODY_SIZE = UDim2.new(0, 324, 0, 136)
 local BODY_SIZE_TENFOOT = UDim2.new(0, 324*scaleFactor, 0, 136*scaleFactor)
-local TWEEN_TIME = 0.3
+local TWEEN_TIME = 0.45
 
 local BTN_L_POS = UDim2.new(0, 0, 0, 136)
 local BTN_L_POS_TENFOOT = UDim2.new(0, 0, 0, 136*scaleFactor)
