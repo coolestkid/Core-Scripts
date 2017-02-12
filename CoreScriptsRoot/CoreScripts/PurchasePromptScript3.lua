@@ -1171,7 +1171,7 @@ local function canPurchase(disableUpsell)
 
 	PurchaseData.ProductInfo = getProductInfo()
 	if not PurchaseData.ProductInfo then
-		onPurchaseFailed(PURCHASE_FAILED.IN_GAME_PURCHASE_DISABLED)
+		onPurchaseFailed(PURCHASE_FAILED.DEFAULT_ERROR)
 		return false
 	end
 
